@@ -10,6 +10,7 @@ import { AreaModule } from './area/area.module';
 import { CalculatorModule } from './calculator/calculator.module';
 import { RegularPolicesModule } from './regular-policies/regular-policies.module';
 
+
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -24,6 +25,7 @@ import { RegularPolicesModule } from './regular-policies/regular-policies.module
     AreaModule,
     CalculatorModule,
     RegularPolicesModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],
