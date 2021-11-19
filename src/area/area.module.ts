@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AreaService } from './area.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AreaController } from './area.controller';
-import { Area } from './entities/area.entity.ts';
+import { Area } from './area.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Area])],
-  exports: [TypeOrmModule],
-  controllers: [AreaController],
+  exports: [AreaService],
   providers: [AreaService],
 })
 export class AreaModule {}

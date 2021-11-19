@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Area } from '../area/area.entity';
+import { ForbiddenArea } from '../forbidden-area/forbidden-area.entity';
 
 @Injectable()
 export class ForbiddenAreaService {
   constructor(
     @InjectRepository(Area)
     private readonly areaRepository: Repository<Area>,
+    @InjectRepository(ForbiddenArea)
+    private readonly forbiddenAreaRepository: Repository<ForbiddenArea>,
   ) {}
 
   // 경계선으로 부터 벗어난 최단거리 반환: area 테이블 사용
@@ -33,7 +36,7 @@ export class ForbiddenAreaService {
     const qPoint = `'POINT (${useEndLat} ${useEndLng})'`;
     const query = ` SELECT id FROM forbidden_area 
                     WHERE ST_CONTAINS( forbiddenAreaBoundary, ST_GeomFromText( ${qPoint} ))`;
-    const result = await this.areaRepository.query(query);
+    const result = await this.forbiddenAreaRepository.query(query);
     console.log(result.length);
     if (result.length) {
       return true; // 벗어나지 않음. 범위 안!
