@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Area } from 'src/area/area.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Parkingzone {
+export class ParkingZone {
   @PrimaryGeneratedColumn()
   parkingzone_id: number;
 
@@ -14,6 +15,6 @@ export class Parkingzone {
   @Column({ type: 'float' })
   parkingzone_radius: number;
 
-  /*  @ManyToOne(() => Area, (area) => area.parkingzone)
-    area: Area;*/
+  // @ManyToOne(() => Area)
+  // area: Area;
 }
