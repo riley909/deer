@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AreaService } from './area.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AreaController } from './area.controller';
-import { Area } from './entities/area.entity';
+import { Area } from './entities/area.entity.ts';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Area])],

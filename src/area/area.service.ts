@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Area } from './entities/area.entity';
+import { Area } from './entities/area.entity.ts';
 
 @Injectable()
 export class AreaService {
