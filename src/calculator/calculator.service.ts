@@ -29,10 +29,13 @@ export class CalculatorService {
       areaId,
       usedTime,
     );
-    //todo 지역 폴리곤 벗어났는지 확인
-    const outOfRange = this.checkOutOfRange(use.useEndLat, use.useEndLng);
-    //todo 금지구역에 있는지 확인
+    //todo 지역 폴리곤 벗어났는지 확인. area.service 로 이동. 안 = true 바깥 = false 반환
+    const outOfRange = this.areaService.checkOutOfRange(use.useEndLat, use.useEndLng);
+    // outOfRange == false 일때 바깥으로 부터 몇 m 떨어져있는지 확인하는 메소드.
+    // -> ForbiddenService 의 outsideDistance(area, use.useEndLat, use.useEndLng);
+    // todo 금지구역에 있는지 확인 outOfRange == true
     const checkInsideForbiddenArea = this.forbiddenAreaService.checkInsideForbiddenArea(areaId, use.useEndLat, use.useEndLng);
+    
     return regularRate;
   }
 
@@ -40,11 +43,5 @@ export class CalculatorService {
   calculateUsedTime(startDateTime: Date, endDateTime: Date): number {
     //todo 이용시간 계산 로직 개발 필요
     return 10;
-  }
-
-  //todo 사용자 이용의 위도, 경도가 지역의 폴리곤 범위를 벗어나는지 확인하는 메서드
-  checkOutOfRange(useEndLat: number, useEndLng: number): boolean {
-    //todo 범위 확인 로직
-    return true;
   }
 }
