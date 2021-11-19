@@ -3,12 +3,15 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class RegularPolicy extends BasicRatePolicy {
+
   @PrimaryColumn()
-  private id: string;
+  id: string;
+
   @Column()
-  private basic: number;
+  basic: number;
+
   @Column()
-  private ratePerMinute: number;
+  ratePerMinute: number;
 
   calculate(minute: number): number {
     return this.basic + this.ratePerMinute * minute;
