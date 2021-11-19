@@ -12,9 +12,7 @@ export class CalculatorService {
     private readonly areaService: AreaService,
     private readonly regularPoliciesService: RegularPoliciesService,
     private readonly forbiddenAreaService: ForbiddenAreaService,
-  ) {
-
-  }
+  ) {}
   calculateRate(use: UseDto): any {
     //todo Kickboard의 유효성 및 Area ID 반환
     const areaId = this.kickboardsService.validationAndReturnAreaInfo(
@@ -30,18 +28,27 @@ export class CalculatorService {
       usedTime,
     );
     //todo 지역 폴리곤 벗어났는지 확인. area.service 로 이동. 안 = true 바깥 = false 반환
-    const outOfRange = this.areaService.checkOutOfRange(use.useEndLat, use.useEndLng);
+    const outOfRange = this.areaService.checkOutOfRange(
+      use.useEndLat,
+      use.useEndLng,
+    );
     // outOfRange == false 일때 바깥으로 부터 몇 m 떨어져있는지 확인하는 메소드.
     // -> ForbiddenService 의 outsideDistance(area, use.useEndLat, use.useEndLng);
     // todo 금지구역에 있는지 확인 outOfRange == true
-    const checkInsideForbiddenArea = this.forbiddenAreaService.checkInsideForbiddenArea(areaId, use.useEndLat, use.useEndLng);
-    
+    const checkInsideForbiddenArea =
+      this.forbiddenAreaService.checkInsideForbiddenArea(
+        areaId,
+        use.useEndLat,
+        use.useEndLng,
+      );
+
     return regularRate;
   }
 
-  //todo 이용시간 계산 유틸리티 메서드
+  // 이용시간 계산 유틸리티 메서드
   calculateUsedTime(startDateTime: Date, endDateTime: Date): number {
-    //todo 이용시간 계산 로직 개발 필요
-    return 10;
+    const diff = startDateTime.getTime() - endDateTime.getTime();
+    const min = Math.floor(diff / 1000 / 60);
+    return min;
   }
 }
