@@ -1,8 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Area } from './area/area.entity';
+import { Kickboard } from './kickboards/kickboard.entity';
 
 @Injectable()
-export class AppService {
+export class AppService implements OnApplicationBootstrap {
+  constructor(
+    @InjectRepository(Area)
+    private readonly areaRepository: Repository<Area>,
+    @InjectRepository(Kickboard)
+    private readonly kickboardRepository: Repository<Kickboard>,
+  ) {}
+
   getHello(): string {
     return 'Hello World!';
+  }
+
+  // 서버 부트 스트랩 될 때 DB 초기화
+  onApplicationBootstrap(): any {
+    const kickboards = this.kickboardRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Kickboard)
+      .values([
+        { deerName: '건대1' },
+        { deerName: '건대2' },
+        { deerName: '여수1' },
+        { deerName: '여수2' },
+      ])
+      .orIgnore()
+      .execute();
+
+    const areas = this.areaRepository.query(
+      `INSERT IGNORE INTO area(area_id, area_boundary, area_center, area_coords) VALUES
+      (
+        '건대', 
+        ST_GEOMFROMTEXT(
+          'POLYGON((0 0, 2 0, 11 11, 0 2, 0 0))'
+        ),
+        ST_GEOMFROMTEXT('POINT(37.562057 127.096092)'), 
+        ST_GEOMFROMTEXT(
+          'LINESTRING(37.571562 127.080008, 37.570788 127.086038, 37.558816 127.087727, 37.554418 127.094311, 37.550332 127.091142, 37.548932 127.093407, 37.544818 127.090204, 37.544015 127.107361, 37.527082 127.085368, 37.538147 127.043375, 37.550774 127.041713, 37.548957 127.062508, 37.571562 127.080008)')
+      ),
+      (
+        '여수', 
+        ST_GEOMFROMTEXT(
+          'POLYGON((0 0, 2 0, 11 11, 0 2, 0 0))'
+        ), 
+        ST_GEOMFROMTEXT('POINT(0 0)'), 
+        ST_GEOMFROMTEXT('LINESTRING(0 0, 1 0)')
+      )`,
+    );
+    return 'insert executed';
   }
 }
