@@ -9,6 +9,7 @@ import { KickboardsModule } from './kickboards/kickboards.module';
 import { AreaModule } from './area/area.module';
 import { CalculatorModule } from './calculator/calculator.module';
 import { RegularPolicesModule } from './regular-policies/regular-policies.module';
+import { ForbiddenAreaModule } from './forbidden-area/forbidden-area.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RegularPolicesModule } from './regular-policies/regular-policies.module
     AreaModule,
     CalculatorModule,
     RegularPolicesModule,
+    ForbiddenAreaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
