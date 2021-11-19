@@ -3,22 +3,27 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Area } from './area/area.entity';
 import { Kickboard } from './kickboards/kickboard.entity';
+import { RegularPoliciesService } from './regular-policies/regular-policies.service';
+import { RegularPolicy } from './regular-policies/regular-policy';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
+
   constructor(
     @InjectRepository(Area)
     private readonly areaRepository: Repository<Area>,
     @InjectRepository(Kickboard)
     private readonly kickboardRepository: Repository<Kickboard>,
-  ) {}
+    @InjectRepository(RegularPolicy)
+    private readonly regularPolicyRepository: Repository<RegularPolicy>
+  ) { }
 
   getHello(): string {
     return 'Hello World!';
   }
 
   // 서버 부트 스트랩 될 때 DB 초기화
-  onApplicationBootstrap(): any {
+  async onApplicationBootstrap(): Promise<any> {
     const kickboards = this.kickboardRepository
       .createQueryBuilder()
       .insert()
@@ -52,6 +57,18 @@ export class AppService implements OnApplicationBootstrap {
         ST_GEOMFROMTEXT('LINESTRING(0 0, 1 0)')
       )`,
     );
+
+    const regularPolicy = this.regularPolicyRepository
+      .createQueryBuilder()
+      .insert()
+      .into(RegularPolicy)
+      .values([
+        { id: "건대", basic: 3000, ratePerMinute: 300 },
+        { id: "여수", basic: 4000, ratePerMinute: 400 },
+      ])
+      .orIgnore()
+      .execute();
+
     return 'insert executed';
   }
 }
