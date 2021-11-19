@@ -27,6 +27,8 @@ export class CalculatorService {
     );
     //todo 지역 폴리곤 벗어났는지 확인. area.service 로 이동. 안 = true 바깥 = false 반환
     const outOfRange = this.areaService.checkOutOfRange(use.useEndLat, use.useEndLng);
+    // outOfRange == false 일때 바깥으로 부터 몇 m 떨어져있는지 확인하는 메소드.
+    // -> ForbiddenService 의 outsideDistance(area, use.useEndLat, use.useEndLng);
 
     return regularRate;
   }
