@@ -1,25 +1,23 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Kickboard } from './kickboard.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class KickboardsService implements OnApplicationBootstrap {
+export class KickboardsService {
   constructor(
     @InjectRepository(Kickboard)
     private readonly kickboardRepository: Repository<Kickboard>,
   ) {}
 
-  //todo 서버 부트 스트랩 될 때 DB 초기화
-  onApplicationBootstrap(): any {
-    console.log('test');
-    return 'string';
-  }
+  async validationAndReturnAreaInfo(useDeerName: string): Promise<string> {
+    const kickboard = await this.kickboardRepository.findOne({
+      where: useDeerName,
+    });
 
-  //todo 킥보드의 유효
-  validationAndReturnAreaInfo(useDeerName: string): string {
-    //todo 킥보드의 유효성 검사 (유효하지 않을 경우 throw Error)
-    //todo 킥보드의 Area의 ID를 반환
-    return 'konkuk';
+    if (!kickboard) {
+      throw new NotFoundException(`"${useDeerName}"가 존재하지 않습니다.`);
+    }
+    return kickboard.area.area_id;
   }
 }

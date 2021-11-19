@@ -3,6 +3,7 @@ import { KickboardsService } from '../kickboards/kickboards.service';
 import { UseDto } from './use.dto';
 import { AreaService } from '../area/area.service';
 import { RegularPoliciesService } from '../regular-policies/regular-policies.service';
+import { ForbiddenAreaService } from '../forbidden-area/forbidden-area.service';
 
 @Injectable()
 export class CalculatorService {
@@ -10,7 +11,10 @@ export class CalculatorService {
     private readonly kickboardsService: KickboardsService,
     private readonly areaService: AreaService,
     private readonly regularPoliciesService: RegularPoliciesService,
-  ) {}
+    private readonly forbiddenAreaService: ForbiddenAreaService,
+  ) {
+
+  }
   calculateRate(use: UseDto): any {
     //todo Kickboard의 유효성 및 Area ID 반환
     const areaId = this.kickboardsService.validationAndReturnAreaInfo(
@@ -29,7 +33,9 @@ export class CalculatorService {
     const outOfRange = this.areaService.checkOutOfRange(use.useEndLat, use.useEndLng);
     // outOfRange == false 일때 바깥으로 부터 몇 m 떨어져있는지 확인하는 메소드.
     // -> ForbiddenService 의 outsideDistance(area, use.useEndLat, use.useEndLng);
-
+    // todo 금지구역에 있는지 확인 outOfRange == true
+    const checkInsideForbiddenArea = this.forbiddenAreaService.checkInsideForbiddenArea(areaId, use.useEndLat, use.useEndLng);
+    
     return regularRate;
   }
 
