@@ -8,17 +8,14 @@ export class AreaService {
   constructor(
     @InjectRepository(Area)
     private readonly areaRepository: Repository<Area>,
-  ) {}
+  ) { }
 
   async validationAndReturnArea(areaId: string): Promise<Area> {
-    //todo 지역의 유효성 검증 (유효하지 않을 경우 throw error)
-    //todo 지역 entity 를 반환
     const areaEntity = await this.findOne(areaId);
-    if (areaEntity.length) {
-      return areaEntity;
-    } else {
+    if (!areaEntity) {
       throw new NotFoundException(`"${areaId}"가 존재하지 않습니다.`);
     }
+    return areaEntity;
   }
 
   //todo 사용자 이용의 위도, 경도가 지역의 폴리곤 범위를 벗어나는지 확인하는 메서드

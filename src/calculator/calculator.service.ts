@@ -12,7 +12,7 @@ export class CalculatorService {
     private readonly areaService: AreaService,
     private readonly regularPoliciesService: RegularPoliciesService,
     private readonly forbiddenAreaService: ForbiddenAreaService,
-  ) {}
+  ) { }
   async calculateRate(use: UseDto): Promise<any> {
     //todo Kickboard의 유효성 및 Area ID 반환
     const areaId = this.kickboardsService.validationAndReturnAreaInfo(
@@ -24,7 +24,7 @@ export class CalculatorService {
     const usedTime = this.calculateUsedTime(use.useStartAt, use.useEndAt);
     //todo 지역 아이디를 기반으로 해당 지역의 기본요금을 계산
     const regularRate = this.regularPoliciesService.calculateRegularRate(
-      await areaId,
+      (await area).area_id,
       usedTime,
     );
     //todo 지역 폴리곤 벗어났는지 확인. area.service 로 이동. 안 = true 바깥 = false 반환
