@@ -3,6 +3,7 @@ import { KickboardsService } from '../kickboards/kickboards.service';
 import { UseDto } from './use.dto';
 import { AreaService } from '../area/area.service';
 import { RegularPoliciesService } from '../regular-policies/regular-policies.service';
+import { ForbiddenAreaService } from '../forbidden-area/forbidden-area.service';
 
 @Injectable()
 export class CalculatorService {
@@ -10,7 +11,10 @@ export class CalculatorService {
     private readonly kickboardsService: KickboardsService,
     private readonly areaService: AreaService,
     private readonly regularPoliciesService: RegularPoliciesService,
-  ) {}
+    private readonly forbiddenAreaService: ForbiddenAreaService,
+  ) {
+
+  }
   calculateRate(use: UseDto): any {
     //todo Kickboard의 유효성 및 Area ID 반환
     const areaId = this.kickboardsService.validationAndReturnAreaInfo(
@@ -27,7 +31,8 @@ export class CalculatorService {
     );
     //todo 지역 폴리곤 벗어났는지 확인
     const outOfRange = this.checkOutOfRange(use.useEndLat, use.useEndLng);
-
+    //todo 금지구역에 있는지 확인
+    const checkInsideForbiddenArea = this.forbiddenAreaService.checkInsideForbiddenArea(areaId, use.useEndLat, use.useEndLng);
     return regularRate;
   }
 
