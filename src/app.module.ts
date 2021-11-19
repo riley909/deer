@@ -9,6 +9,8 @@ import { KickboardsModule } from './kickboards/kickboards.module';
 import { AreaModule } from './area/area.module';
 import { CalculatorModule } from './calculator/calculator.module';
 import { RegularPolicesModule } from './regular-policies/regular-policies.module';
+import { Kickboard } from './kickboards/kickboard.entity';
+import { Area } from './area/area.entity';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { RegularPolicesModule } from './regular-policies/regular-policies.module
           autoLoadEntities: true,
         }),
     }),
+    TypeOrmModule.forFeature([Area, Kickboard]),
     AuthModule,
     UsersModule,
     KickboardsModule,
