@@ -13,6 +13,7 @@ import { Kickboard } from './kickboards/kickboard.entity';
 import { Area } from './area/area.entity';
 import { ForbiddenAreaModule } from './forbidden-area/forbidden-area.module';
 import { RegularPolicy } from './regular-policies/regular-policy';
+import { PenaltyPoliciesModule } from './penalty-policies/penalty-policies.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { RegularPolicy } from './regular-policies/regular-policy';
     CalculatorModule,
     RegularPolicesModule,
     ForbiddenAreaModule,
+    PenaltyPoliciesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
