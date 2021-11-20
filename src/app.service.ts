@@ -29,18 +29,9 @@ export class AppService implements OnApplicationBootstrap {
 
   // 서버 부트 스트랩 될 때 DB 초기화
   async onApplicationBootstrap(): Promise<any> {
-    const kickboards = this.kickboardRepository
-      .createQueryBuilder()
-      .insert()
-      .into(Kickboard)
-      .values([
-        { deerName: '건대1' },
-        { deerName: '건대2' },
-        { deerName: '여수1' },
-        { deerName: '여수2' },
-      ])
-      .orIgnore()
-      .execute();
+    const kickboards = await this.kickboardRepository.query(
+      `INSERT IGNORE INTO kickboard(deerName, areaId) VALUES('건대1', '건대'), ('건대2', '건대'), ('여수1', '여수'), ('여수2', '여수')`,
+    );
 
     const areas = this.areaRepository.query(
       `INSERT IGNORE INTO area(id, area_boundary, area_center, area_coords) VALUES
