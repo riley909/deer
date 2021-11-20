@@ -30,7 +30,7 @@ export class AppService implements OnApplicationBootstrap {
   // 서버 부트 스트랩 될 때 DB 초기화
   async onApplicationBootstrap(): Promise<any> {
     const kickboards = await this.kickboardRepository.query(
-      `INSERT IGNORE INTO kickboard(deerName, areaId) VALUES('건대1', '건대'), ('건대2', '건대'), ('여수1', '여수'), ('여수2', '여수')`,
+      `INSERT IGNORE INTO kickboard(deer_name, area_id) VALUES('건대1', '건대'), ('건대2', '건대'), ('여수1', '여수'), ('여수2', '여수')`,
     );
 
     const areas = this.areaRepository.query(
@@ -66,7 +66,7 @@ export class AppService implements OnApplicationBootstrap {
       .execute();
 
     const parkingZone = this.parkingZoneRepository.query(
-      `INSERT IGNORE INTO parking_zone(id, parkingzone_center_lat, parkingzone_center_lng, parkingzone_radius, areaId) VALUES
+      `INSERT IGNORE INTO parking_zone(id, parkingzone_center_lat, parkingzone_center_lng, parkingzone_radius, area_id) VALUES
        (1, 37.547005, 127.074779, 0.05, '건대'),
        (2, 37.541134, 127.073721, 0.05, '건대'),
        (3, 37.544263, 127.057211, 0.05, '건대'),
@@ -74,7 +74,7 @@ export class AppService implements OnApplicationBootstrap {
     );
 
     const forbiddenArea = this.forbiddenAreaRepository.query(
-      `INSERT IGNORE INTO forbidden_area(id, forbiddenAreaBoundary, forbiddenAreaCoords, areaId) VALUES
+      `INSERT IGNORE INTO forbidden_area(id, forbidden_area_boundary, forbidden_area_coords, area_id) VALUES
       (
         '건대1', 
         ST_GEOMFROMTEXT(

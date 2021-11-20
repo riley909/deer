@@ -17,7 +17,7 @@ import { PenaltyPoliciesModule } from './penalty-policies/penalty-policies.modul
 import { ParkingZoneModule } from './parking-zone/parking-zone.module';
 import { ParkingZone } from './parking-zone/parking-zone.entity';
 import { ForbiddenArea } from './forbidden-area/forbidden-area.entity';
-
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -25,6 +25,7 @@ import { ForbiddenArea } from './forbidden-area/forbidden-area.entity';
       useFactory: async () =>
         Object.assign(await getConnectionOptions(), {
           autoLoadEntities: true,
+          namingStrategy: new SnakeNamingStrategy(),
         }),
     }),
     TypeOrmModule.forFeature([
