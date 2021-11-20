@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 @Entity()
 export class Area {
   @PrimaryColumn()
-  area_id: string;
+  id: string;
 
   @Column({ type: 'polygon' })
   area_boundary: number;

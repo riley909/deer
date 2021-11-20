@@ -25,7 +25,7 @@ export class AreaService {
   ): Promise<boolean> {
     //todo 범위 확인 로직
     const qPoint = `'POINT (${useEndLat} ${useEndLng})'`;
-    const query = ` SELECT area_id FROM area 
+    const query = ` SELECT id FROM area 
                     WHERE ST_CONTAINS( area_boundary, ST_GeomFromText( ${qPoint} ))`;
     const result = await this.areaRepository.query(query);
     console.log(result.length);
@@ -37,7 +37,7 @@ export class AreaService {
   }
 
   async findOne(areaId: string) {
-    const query = `SELECT area_id, ST_AsText(area_boundary), ST_AsText(area_center), ST_AsText(area_coords) as area_coords FROM area WHERE area_id = ${areaId}`;
+    const query = `SELECT id, ST_AsText(area_boundary), ST_AsText(area_center), ST_AsText(area_coords) as area_coords FROM area WHERE id = ${areaId}`;
     const areaEntity = await this.areaRepository.query(query);
     return areaEntity;
   }

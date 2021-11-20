@@ -38,7 +38,7 @@ export class AppService implements OnApplicationBootstrap {
       .execute();
 
     const areas = this.areaRepository.query(
-      `INSERT IGNORE INTO area(area_id, area_boundary, area_center, area_coords) VALUES
+      `INSERT IGNORE INTO area(id, area_boundary, area_center, area_coords) VALUES
       (
         '건대', 
         ST_GEOMFROMTEXT(
