@@ -4,7 +4,6 @@ import { UseDto } from './use.dto';
 import { AreaService } from '../area/area.service';
 import { RegularPoliciesService } from '../regular-policies/regular-policies.service';
 import { ForbiddenAreaService } from '../forbidden-area/forbidden-area.service';
-import { PenaltyPoliciesService } from '../penalty-policies/penalty-policies.service';
 
 @Injectable()
 export class CalculatorService {
@@ -13,7 +12,6 @@ export class CalculatorService {
     private readonly areaService: AreaService,
     private readonly regularPoliciesService: RegularPoliciesService,
     private readonly forbiddenAreaService: ForbiddenAreaService,
-    private readonly penaltyPoliciesService: PenaltyPoliciesService,
   ) {}
   async calculateRate(use: UseDto): Promise<any> {
     //todo Kickboard의 유효성 및 Area ID 반환
@@ -52,9 +50,7 @@ export class CalculatorService {
         use.useEndLng,
       );
 
-    //todo 이용정보와 지역정보로 적용되는 패널티의 리스트를 반환한다.
-    const penaltyPolicy =
-      await this.penaltyPoliciesService.isSatisfiedPenaltyList(areaId);
+    //todo 할인과 벌금 한번에 처리하는 로직(유진님)
 
     return regularRate;
   }

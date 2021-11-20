@@ -13,7 +13,6 @@ import { Kickboard } from './kickboards/kickboard.entity';
 import { Area } from './area/area.entity';
 import { ForbiddenAreaModule } from './forbidden-area/forbidden-area.module';
 import { RegularPolicy } from './regular-policies/regular-policy';
-import { PenaltyPoliciesModule } from './penalty-policies/penalty-policies.module';
 import { ParkingZoneModule } from './parking-zone/parking-zone.module';
 import { ParkingZone } from './parking-zone/parking-zone.entity';
 import { ForbiddenArea } from './forbidden-area/forbidden-area.entity';
@@ -41,7 +40,6 @@ import { ForbiddenArea } from './forbidden-area/forbidden-area.entity';
     CalculatorModule,
     RegularPolicesModule,
     ForbiddenAreaModule,
-    PenaltyPoliciesModule,
     ParkingZoneModule,
   ],
   controllers: [AppController],

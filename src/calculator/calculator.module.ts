@@ -5,7 +5,6 @@ import { KickboardsModule } from '../kickboards/kickboards.module';
 import { AreaModule } from '../area/area.module';
 import { RegularPolicesModule } from '../regular-policies/regular-policies.module';
 import { ForbiddenAreaModule } from '../forbidden-area/forbidden-area.module';
-import { PenaltyPoliciesModule } from '../penalty-policies/penalty-policies.module';
 
 @Module({
   controllers: [CalculatorController],
@@ -14,7 +13,6 @@ import { PenaltyPoliciesModule } from '../penalty-policies/penalty-policies.modu
     AreaModule,
     RegularPolicesModule,
     ForbiddenAreaModule,
-    PenaltyPoliciesModule,
   ],
   providers: [CalculatorService],
 })
