@@ -18,6 +18,6 @@ export class KickboardsService {
     if (!kickboard) {
       throw new NotFoundException(`"${useDeerName}"가 존재하지 않습니다.`);
     }
-    return kickboard.area.area_id;
+    return kickboard.area.id;
   }
 }
