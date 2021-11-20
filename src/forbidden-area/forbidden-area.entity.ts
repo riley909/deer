@@ -1,8 +1,9 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Area } from '../area/area.entity';
+import { RangePenaltyCondition } from '../penalty-policies/range-penalty-condition';
 
 @Entity()
-export class ForbiddenArea {
+export class ForbiddenArea implements RangePenaltyCondition {
   @PrimaryColumn()
   id: string;
 
@@ -14,4 +15,9 @@ export class ForbiddenArea {
 
   @ManyToOne(() => Area)
   area: Area;
+
+  isSatisfied(useEndLat: number, useEndLng: number): boolean {
+    //todo 포비든 에어리어라면 true 아니라면 false
+    return false;
+  }
 }
