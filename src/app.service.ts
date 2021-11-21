@@ -7,6 +7,7 @@ import { RegularPoliciesService } from './regular-policies/regular-policies.serv
 import { RegularPolicy } from './regular-policies/regular-policy';
 import { ParkingZone } from './parking-zone/parking-zone.entity';
 import { ForbiddenArea } from './forbidden-area/forbidden-area.entity';
+import { DiscountPenaltyInfo } from './discount-penalty-info/discount-penalty-info';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
@@ -21,7 +22,9 @@ export class AppService implements OnApplicationBootstrap {
     private readonly parkingZoneRepository: Repository<ParkingZone>,
     @InjectRepository(ForbiddenArea)
     private readonly forbiddenAreaRepository: Repository<ForbiddenArea>,
-  ) {}
+    @InjectRepository(DiscountPenaltyInfo)
+    private readonly discountPenaltyInfoRepository: Repository<DiscountPenaltyInfo>,
+  ) { }
 
   getHello(): string {
     return 'Hello World!';
@@ -54,16 +57,23 @@ export class AppService implements OnApplicationBootstrap {
       )`,
     );
 
-    const regularPolicy = this.regularPolicyRepository
-      .createQueryBuilder()
-      .insert()
-      .into(RegularPolicy)
-      .values([
-        { id: '건대', basic: 3000, ratePerMinute: 300 },
-        { id: '여수', basic: 4000, ratePerMinute: 400 },
-      ])
-      .orIgnore()
-      .execute();
+    const regularPolicy = this.regularPolicyRepository.query(
+      `INSERT IGNORE INTO regular_policy(id, basic, rate_per_minute) VALUES
+       ('건대', 3000, 300),
+       ('여수', 4000, 400)`,
+    );
+
+
+    const discountPenaltyInfo = this.discountPenaltyInfoRepository.query(
+      `INSERT IGNORE INTO discount_penalty_info(id, type, category, content, policy, price) VALUES
+       (1, 'discount', 'all', null, 'parkingZone', 30),
+       (2, 'discount', 'all', null, 'useIn30Minute', 0),
+       (3, 'discount', 'kickboard', '건대1', 'parkingZoneFree', 0),
+       (4, 'penalty', 'all', null, 'forbiddenArea', 6000),
+       (5, 'penalty', 'area', '여수', 'outOfRange', 100),
+       (6, 'penalty', 'area', '건대', 'outOfRange', 200)`,
+    );
+
 
     const parkingZone = this.parkingZoneRepository.query(
       `INSERT IGNORE INTO parking_zone(id, parkingzone_center_lat, parkingzone_center_lng, parkingzone_radius, area_id) VALUES
