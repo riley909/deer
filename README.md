@@ -143,27 +143,55 @@ forbidden_area_coords (반납금지구역의 경계를 표시하는 위도, 경�
 
 ## 📌 구현 기능
 
+## NestJS Lifecycle events 활용하기
+
+DB 초기화 작업을 자동으로 수행하기 위해 NestJS의 생명주기를 이용했습니다. <br>
+모든 모듈이 초기화된 후 연결을 수신하기 전, 어플리케이션이 부트스트랩될 때 호출되는 onApplicationBootstrap() 후크를 사용했습니다.
+
+```
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+
+@Injectable()
+export class AppService implements OnApplicationBootstrap {
+  async onApplicationBootstrap() {
+    // initialize database
+  }
+}
+```
+
+서버 구동시 테이블 생성과 동시에 테스트 가능한 데이터가 삽입됩니다.
+
+<br>
 
 ## MySQL의 Spatial Data Types 활용하기
+
 (MySQL 8.0 Reference Manual 을 참고하여 작성했으며 버전별로 사용하는 함수가 다르므로 확인이 필요합니다.) <br>
 이번 과제에서는 single geometry 값을 보유하는 POINT, LINESTRING, POLYGON 을 사용했습니다. <br>
+
 - POINT: 유저의 좌표, parking-zone의 위치 <br>
 - LINESTRING: 지역의 경계(선분) <br>
 - POLYGON: 지역(면) <br>
 
 ### 사용자에게 좌표를 (위도, 경도) 를 받았을 때 계산하는 방법 <br>
+
 #### 1. 사용자가 해당 지역 안에서 반납을 요청하였을 때 <br>
-  1) 해당 지역 내부인지 확인 (ST_CONTAINS, ST_GeomFromText 함수 사용) <br>
+
+1. 해당 지역 내부인지 확인 (ST_CONTAINS, ST_GeomFromText 함수 사용) <br>
+
 ```
 SELECT *(any) FROM '해당테이블' WHERE ST_CONTAINS( 해당테이블의 POLYGON 타입을 탐고 있는 attribute , ST_GeomFromText( ${사용자의 좌표(POINT)} ))`;
 ```
-  2) 해당 지역의 parking-zone 인지 확인 <br>
+
+2. 해당 지역의 parking-zone 인지 확인 <br>
+
 ```
-    SELECT * , 하버사인 공식 AS distance 
-    FROM parking_zone 
+    SELECT * , 하버사인 공식 AS distance
+    FROM parking_zone
     HAVING distance <= parking_zone의 반지름 attribute
 ```
+
 반지름 내에 있는지 확인하여 있다면 값이 조회됨.
+
 ```
 하버사인 공식을 이용한 부분
 	(6371*ACOS(COS(RADIANS('user 위도값'))
@@ -172,12 +200,14 @@ SELECT *(any) FROM '해당테이블' WHERE ST_CONTAINS( 해당테이블의 POLYG
         +SIN(RADIANS('user 위도값'))*SIN(RADIANS('위도 attribute'))))
 
 ```
-  3) 해당 지역의 금지구역인지 확인 <br>
-위의 내부확인과 같이 해당하는 Table 만 바꿔 조회화면 된다. <br> 
 
-#### 2. 사용자가 해당 지역 바깥에서 반납을 요청하였을 때 <br> 
+3. 해당 지역의 금지구역인지 확인 <br>
+   위의 내부확인과 같이 해당하는 Table 만 바꿔 조회화면 된다. <br>
+
+#### 2. 사용자가 해당 지역 바깥에서 반납을 요청하였을 때 <br>
+
 사용자의 좌표와 해당 지역의 경계의 거리를 구한다.(ST_DISTANCE, ST_GeomFromText 함수 사용) <br>
-``` SELECT ST_DISTANCE( ST_GeomFromText( ${사용자의 좌표(POINT)} ), ST_GeomFromText( ${지역의 경계값(LINESTRING)} )) AS DISTANCE ``` <br> 
+`SELECT ST_DISTANCE( ST_GeomFromText( ${사용자의 좌표(POINT)} ), ST_GeomFromText( ${지역의 경계값(LINESTRING)} )) AS DISTANCE` <br>
 의 Query 를 보내면 소수점의 거리가 나오는데 필요에 맞게 가공하여 사용하면 된다. <br>
 e.g. 이번 프로젝트에 사용한 지역 <br>
 <img src="https://user-images.githubusercontent.com/61304585/142751694-12effc02-d22f-40b1-83ec-fc765950154e.png" width=500> <br>
@@ -188,39 +218,46 @@ e.g. 이번 프로젝트에 사용한 지역 <br>
 <br>
 
 ## 이용요금 계산하기
+
 이용정보로 이용요금을 계산하는 방법은 다음과 같습니다. <br>
 
 #### 1. 유저 정보, 킥보드 정보 조회 <br>
+
 #### 2. 킥보드의 지역 정보로 기본요금(기본 요금+시간당 요금) 계산 <br>
+
 #### 3. 할인 및 벌금 적용 <br>
+
 할인 및 벌금 정보는 discount_penalty_info 테이블에서 관리합니다. <br>
 특정 킥보드, 특정 회원에게만 적용되는 정책이 추가될 가능성을 고려해서 category, content 칼럼을 추가하고 정책 적용 대상을 구분하여 저장할 수 있도록 했습니다.<br>
 
 <img src="https://user-images.githubusercontent.com/42341135/142761145-4ed03ff7-fc68-46fa-a2fe-c464a8178437.png" width=400> <br>
 
-- type :  할인/벌금 구분 <br>
+- type : 할인/벌금 구분 <br>
 - category : 지역/키보드/유저/전체 등 정책 적용 대상 <br>
 - content : 지역명, 킥보드명, 유저id 등 category별 키 값 <br>
 - policy : 정책명 <br>
 - price : 금액, % <br>
-<br>
+  <br>
 
 ##### 1) 벌금 적용 <br>
- 1. discount_penalty_info 테이블에서 해당 이용 건에 적용 가능한 벌금정책 리스트 조회 <br>
-ex) category="지역", content="지역명", type="discount" 이거나  <br>
-    category="킥보드", content="킥보드명", type="discount" 이거나  <br>
-    category="유저", content="유저id", type="discount" 이거나  <br>
+
+1.  discount_penalty_info 테이블에서 해당 이용 건에 적용 가능한 벌금정책 리스트 조회 <br>
+    ex) category="지역", content="지역명", type="discount" 이거나 <br>
+    category="킥보드", content="킥보드명", type="discount" 이거나 <br>
+    category="유저", content="유저id", type="discount" 이거나 <br>
     category="전체", type="discount" 인 데이터 조회 <br>
 
- 2. 반납좌표가 금지구역 안인 경우 조회된 리스트 중 해당하는 정책을 찾아 벌금 부과 후 return <br>
+2.  반납좌표가 금지구역 안인 경우 조회된 리스트 중 해당하는 정책을 찾아 벌금 부과 후 return <br>
     반납좌표가 관할구역 외인 경우 조회된 리스트 중 해당하는 정책을 찾아 벌금 부과 후 return <br>
     기타 벌금정책이 존재할 경우 적용된 정책명, 금액을 상세내역 리스트(details)에 추가합니다. <br>
 
 ##### 2) 할인 적용 <br>
- 1. 같은 방식으로 discount_penalty_info 테이블에서 해당 이용 건에 적용 가능한 할인정책 리스트 조회 <br>
- 2. switch문으로 정책에 맞는 로직을 수행하며 적용된 정책명, 금액을 상세내역 리스트(details)에 추가합니다. <br>
+
+1.  같은 방식으로 discount_penalty_info 테이블에서 해당 이용 건에 적용 가능한 할인정책 리스트 조회 <br>
+2.  switch문으로 정책에 맞는 로직을 수행하며 적용된 정책명, 금액을 상세내역 리스트(details)에 추가합니다. <br>
 
 #### 4. 최종 금액(totalPrice)과 상세내역 리스트(details) retrun <br>
+
 ```
  "details": [
         {
@@ -231,10 +268,10 @@ ex) category="지역", content="지역명", type="discount" 이거나  <br>
 ],
 "totalPrice": 0
 ```
+
 <br>
 details의 type은 기본요금, 할인, 패널티 구분을 나타냅니다. details가 discount인 경우 price만큼 기본요금에서 빼고, details가 penalty인 경우 price만큼 기본요금에 더합니다. <br>
 이 결과값이 최종금액(totalPrice)이며 0보다 작을 경우는 0을 retrun합니다. <br>
-
 
 ## 📖 API Document
 
@@ -244,7 +281,7 @@ details의 type은 기본요금, 할인, 패널티 구분을 나타냅니다. de
 
 1. 다음 링크로 이동합니다. [postman 링크]()
 2. 회원가입 요청을 통해 회원 정보를 추가합니다.
-3. 요금계산 api를 호출한다. 
+3. 요금계산 api를 호출한다.
 
 ## 🪄 설치 및 실행 방법
 
@@ -291,9 +328,6 @@ $ npm install
 $ npm start
 ```
 
-
-
-
 ## 🛠 Dependencies
 
 </br>
@@ -308,4 +342,7 @@ $ npm start
 ## Reference
 
 이 프로젝트는 [원티드 프리온보딩 백엔드 코스](https://www.wanted.co.kr/events/pre_onboarding_course_4) 6차 과제 일환으로 디어코퍼레이션에서 출제한 과제를 기반으로 만들었습니다.
+
+```
+
 ```
