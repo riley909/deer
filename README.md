@@ -184,6 +184,57 @@ e.g. 이번 프로젝트에 사용한 지역 <br>
 <img src="https://user-images.githubusercontent.com/61304585/142751709-e50da958-23b7-40db-b9f3-6a346c27cb59.png" width=200> <br>
 결괏값으로 나온 DISTANCE 에 100,000 을 곱하면 이번 프로젝트에서 사용할 m(미터) 가 나오는데 실제 지도에서 거리를 확인해 보면 거의 같은 것을 볼 수 있다. <br>
 <br>
+<br>
+<br>
+
+## 이용요금 계산하기
+이용정보로 이용요금을 계산하는 방법은 다음과 같습니다. <br>
+
+#### 1. 유저 정보, 킥보드 정보 조회 <br>
+#### 2. 킥보드의 지역 정보로 기본요금(기본 요금+시간당 요금) 계산 <br>
+#### 3. 할인 및 벌금 적용 <br>
+할인 및 벌금 정보는 discount_penalty_info 테이블에서 관리합니다. <br>
+특정 킥보드, 특정 회원에게만 적용되는 정책이 추가될 가능성을 고려해서 category, content 칼럼을 추가하고 정책 적용 대상을 구분하여 저장할 수 있도록 했습니다.<br>
+
+<img src="https://user-images.githubusercontent.com/42341135/142761145-4ed03ff7-fc68-46fa-a2fe-c464a8178437.png" width=400> <br>
+
+- type :  할인/벌금 구분 <br>
+- category : 지역/키보드/유저/전체 등 정책 적용 대상 <br>
+- content : 지역명, 킥보드명, 유저id 등 category별 키 값 <br>
+- policy : 정책명 <br>
+- price : 금액, % <br>
+<br>
+
+##### 1) 벌금 적용 <br>
+ 1. discount_penalty_info 테이블에서 해당 이용 건에 적용 가능한 벌금정책 리스트 조회 <br>
+ex) category="지역", content="지역명", type="discount" 이거나  <br>
+    category="킥보드", content="킥보드명", type="discount" 이거나  <br>
+    category="유저", content="유저id", type="discount" 이거나  <br>
+    category="전체", type="discount" 인 데이터 조회 <br>
+
+ 2. 반납좌표가 금지구역 안인 경우 조회된 리스트 중 해당하는 정책을 찾아 벌금 부과 후 return <br>
+    반납좌표가 관할구역 외인 경우 조회된 리스트 중 해당하는 정책을 찾아 벌금 부과 후 return <br>
+    기타 벌금정책이 존재할 경우 적용된 정책명, 금액을 상세내역 리스트(details)에 추가합니다. <br>
+
+##### 2) 할인 적용 <br>
+ 1. 같은 방식으로 discount_penalty_info 테이블에서 해당 이용 건에 적용 가능한 할인정책 리스트 조회 <br>
+ 2. switch문으로 정책에 맞는 로직을 수행하며 적용된 정책명, 금액을 상세내역 리스트(details)에 추가합니다. <br>
+
+#### 4. 최종 금액(totalPrice)과 상세내역 리스트(details) retrun <br>
+```
+ "details": [
+        {
+            "type": "basic", //basic, discount, penalty
+            "policy": "기본요금",
+            "price": 4500
+        }, ...
+],
+"totalPrice": 0
+```
+<br>
+details의 type은 기본요금, 할인, 패널티 구분을 나타냅니다. details가 discount인 경우 price만큼 기본요금에서 빼고, details가 penalty인 경우 price만큼 기본요금에 더합니다. <br>
+이 결과값이 최종금액(totalPrice)이며 0보다 작을 경우는 0을 retrun합니다. <br>
+
 
 ## 📖 API Document
 
@@ -192,10 +243,8 @@ e.g. 이번 프로젝트에 사용한 지역 <br>
 ### API Test 방법
 
 1. 다음 링크로 이동합니다. [postman 링크]()
-2. user폴더 안의 회원가입, 로그인 요청을 통하여 accessToken을 획득합니다.
-3. 권한이 필요한 api 요청 시 header의 Authorization 항목에 accessToken을 입력하여 요청할 수 있습니다.
-
-- 로그인, 회원가입을 제외한 api 호출시 accessToken이 필요합니다.
+2. 회원가입 요청을 통해 회원 정보를 추가합니다.
+3. 요금계산 api를 호출한다. 
 
 ## 🪄 설치 및 실행 방법
 
@@ -234,28 +283,16 @@ $ npm install
   MYSQL_DATABASE: wanted
   ```
 
-```
-
 </details>
 
 4.서버를 구동합니다.
 
 ```
-
 $ npm start
-
 ```
 
-<span style="color:red"><b>[수정]</b>5. Unit test 및 End-to-End test를 진행합니다.</span>
 
-```
 
-$ npm test
-
-```
-
-</br>
-</br>
 
 ## 🛠 Dependencies
 
