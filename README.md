@@ -143,7 +143,46 @@ forbidden_area_coords (반납금지구역의 경계를 표시하는 위도, 경�
 
 ## 📌 구현 기능
 
-<br>
+
+## MySQL의 Spatial Data Types 활용하기
+(MySQL 8.0 Reference Manual 을 참고하여 작성했으며 버전별로 사용하는 함수가 다르므로 확인이 필요합니다.) <br>
+이번 과제에서는 single geometry 값을 보유하는 POINT, LINESTRING, POLYGON 을 사용했습니다. <br>
+- POINT: 유저의 좌표, parking-zone의 위치 <br>
+- LINESTRING: 지역의 경계(선분) <br>
+- POLYGON: 지역(면) <br>
+
+### 사용자에게 좌표를 (위도, 경도) 를 받았을 때 계산하는 방법 <br>
+#### 1. 사용자가 해당 지역 안에서 반납을 요청하였을 때 <br>
+  1) 해당 지역 내부인지 확인 (ST_CONTAINS, ST_GeomFromText 함수 사용) <br>
+```
+SELECT *(any) FROM '해당테이블' WHERE ST_CONTAINS( 해당테이블의 POLYGON 타입을 탐고 있는 attribute , ST_GeomFromText( ${사용자의 좌표(POINT)} ))`;
+```
+  2) 해당 지역의 parking-zone 인지 확인 <br>
+```
+    SELECT * , 하버사인 공식 AS distance 
+    FROM parking_zone 
+    HAVING distance <= parking_zone의 반지름 attribute
+```
+반지름 내에 있는지 확인하여 있다면 값이 조회됨.
+```
+하버사인 공식을 이용한 부분
+	(6371*ACOS(COS(RADIANS('user 위도값'))
+    	*COS(RADIANS('위도 attribute'))
+        *COS(radians('경도 attribute')-RADIANS('user 경도값'))
+        +SIN(RADIANS('user 위도값'))*SIN(RADIANS('위도 attribute'))))
+
+```
+  3) 해당 지역의 금지구역인지 확인 <br>
+위의 내부확인과 같이 해당하는 Table 만 바꿔 조회화면 된다. <br> 
+
+#### 2. 사용자가 해당 지역 바깥에서 반납을 요청하였을 때 <br> 
+사용자의 좌표와 해당 지역의 경계의 거리를 구한다.(ST_DISTANCE, ST_GeomFromText 함수 사용) <br>
+``` SELECT ST_DISTANCE( ST_GeomFromText( ${사용자의 좌표(POINT)} ), ST_GeomFromText( ${지역의 경계값(LINESTRING)} )) AS DISTANCE ``` <br> 
+의 Query 를 보내면 소수점의 거리가 나오는데 필요에 맞게 가공하여 사용하면 된다. <br>
+e.g. 이번 프로젝트에 사용한 지역 <br>
+<img src="https://user-images.githubusercontent.com/61304585/142751694-12effc02-d22f-40b1-83ec-fc765950154e.png" width=500> <br>
+<img src="https://user-images.githubusercontent.com/61304585/142751709-e50da958-23b7-40db-b9f3-6a346c27cb59.png" width=200> <br>
+결괏값으로 나온 DISTANCE 에 100,000 을 곱하면 이번 프로젝트에서 사용할 m(미터) 가 나오는데 실제 지도에서 거리를 확인해 보면 거의 같은 것을 볼 수 있다. <br>
 <br>
 
 ## 📖 API Document
