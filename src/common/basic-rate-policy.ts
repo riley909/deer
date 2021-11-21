@@ -1,5 +1,4 @@
 import { RatePolicy } from './rate-policy';
-import { UseDto } from '../calculator/use.dto';
 
 export abstract class BasicRatePolicy implements RatePolicy {
   calculateRate(minute: number): number {

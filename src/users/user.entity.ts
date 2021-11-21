@@ -4,13 +4,14 @@ import { BaseCommonEntity } from '../common/base-common.entity';
 
 @Entity()
 export class User extends BaseCommonEntity {
+
   @Column()
   email: string;
 
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastUsed: Date;
 
   @Column({
