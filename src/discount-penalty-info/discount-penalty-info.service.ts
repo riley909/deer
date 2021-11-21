@@ -6,6 +6,7 @@ import { UseDto } from 'src/calculator/use.dto';
 import { ForbiddenAreaService } from 'src/forbidden-area/forbidden-area.service';
 import { PriceDetail } from 'src/calculator/priceDetail.dto';
 import { User } from 'src/users/user.entity';
+import { Area } from '../area/area.entity';
 
 @Injectable()
 export class DiscountPenaltyInfoService {
@@ -18,7 +19,7 @@ export class DiscountPenaltyInfoService {
 
   async calculateDiscountPenalty(
     user: User,
-    area: string, use: UseDto, regularRate: number,
+    area: Area, use: UseDto, regularRate: number,
     outOfRange: boolean,
     checkInsideForbiddenArea: boolean,
     checkInsideParkingZone: boolean
@@ -31,7 +32,7 @@ export class DiscountPenaltyInfoService {
 
     let penaltyInfoList = await this.discountPenaltyInfoRepository.find({
       where: [
-        { category: 'area', content: area, type: 'penalty' },
+        { category: 'area', content: area[0].id, type: 'penalty' },
         { category: 'kickboard', content: use.useDeerName, type: 'penalty' },
         { category: 'user', content: user.id, type: 'penalty' },
         { category: 'all', type: 'penalty' },
