@@ -4,16 +4,28 @@ import { UseDto } from './use.dto';
 import { AreaService } from '../area/area.service';
 import { RegularPoliciesService } from '../regular-policies/regular-policies.service';
 import { ForbiddenAreaService } from '../forbidden-area/forbidden-area.service';
+import { DiscountPenaltyInfoService } from '../discount-penalty-info/discount-penalty-info.service';
+import { ParkingZoneService } from 'src/parking-zone/parking-zone.service';
+import { PriceDetail } from './priceDetail.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class CalculatorService {
   constructor(
     private readonly kickboardsService: KickboardsService,
     private readonly areaService: AreaService,
+    private readonly userService: UsersService,
     private readonly regularPoliciesService: RegularPoliciesService,
+    private readonly discountPenaltyInfoService: DiscountPenaltyInfoService,
+    private readonly parkingZoneService: ParkingZoneService,
     private readonly forbiddenAreaService: ForbiddenAreaService,
-  ) {}
+  ) { }
+
+
   async calculateRate(use: UseDto): Promise<any> {
+
+    let details: PriceDetail[] = [];
+
     //todo Kickboard의 유효성 및 Area ID 반환
     const areaId = await this.kickboardsService.validationAndReturnAreaInfo(
       use.useDeerName,
@@ -22,8 +34,13 @@ export class CalculatorService {
     //todo 지역의 유효성 및 지역 Entity 반환
     const area = await this.areaService.validationAndReturnArea(areaId);
 
+    //todo User의 유효성 및 User Entity 반환
+    let user = await this.userService.findOne(
+      use.useUserId,
+    );
+
     //todo 이용시간 계산
-    const usedTime = this.calculateUsedTime(use.useStartAt, use.useEndAt);
+    const usedTime = await this.discountPenaltyInfoService.calculateUsedTime(use.useStartAt, use.useEndAt);
 
     //todo 지역 아이디를 기반으로 해당 지역의 기본요금을 계산
     const regularRate = await this.regularPoliciesService.calculateRegularRate(
@@ -31,34 +48,45 @@ export class CalculatorService {
       usedTime,
     );
 
-    //todo 지역 폴리곤 벗어났는지 확인. area.service 로 이동. 안 = true 바깥 = false 반환
+    details.push({
+      type: 'basic',
+      policy: '기본요금',
+      price: regularRate
+    })
+
+    // 지역 폴리곤 벗어났는지 확인. 지역 안이면 true
     const outOfRange = await this.areaService.checkOutOfRange(
       use.useEndLat,
       use.useEndLng,
     );
-    if (outOfRange) {
-      // outOfRange == false 일때 바깥으로 부터 몇 m 떨어져있는지 확인하는 메소드.
-      // const 몇미터? = this.forbiddenAreaService.outsideDistance(area, use.useEndLat, use.useEndLng);
-      //todo 기본요금 + 거리당 벌금
-      return '기본요금 + 거리당 벌금 부과';
-    }
 
-    // todo 금지구역에 있는지 확인. outOfRange == true
+    // 금지구역에 있는지 확인. 금지구역 안이면 true
     const checkInsideForbiddenArea =
       await this.forbiddenAreaService.checkInsideForbiddenArea(
         use.useEndLat,
         use.useEndLng,
       );
 
-    //todo 할인과 벌금 한번에 처리하는 로직(유진님)
+    // 파킹존에 있는지 확인. 파킹존 안이면 true
+    const checkInsideParkingZone =
+      await this.parkingZoneService.exists(
+        use.useEndLat,
+        use.useEndLng,
+      );
 
-    return regularRate;
-  }
+    //할인과 벌금 적용
+    const discountPenalty = await this.discountPenaltyInfoService.calculateDiscountPenalty(user, area.id, use, regularRate, outOfRange, checkInsideForbiddenArea, checkInsideParkingZone);
+    details = details.concat(discountPenalty.details);
 
-  // 이용시간 계산 유틸리티 메서드
-  calculateUsedTime(startDateTime: Date, endDateTime: Date): number {
-    const diff = startDateTime.getTime() - endDateTime.getTime();
-    const min = Math.floor(diff / 1000 / 60);
-    return min;
+    // 마지막 사용시간 업데이트
+    if (areaId && area && user) {
+      user.lastUsed = use.useEndAt;
+      await this.userService.updateLastUsed(user);
+    }
+
+    return {
+      details,
+      totalPrice: discountPenalty.totalPrice
+    };
   }
 }

@@ -4,7 +4,7 @@ import { UseDto } from './use.dto';
 
 @Controller('calculator')
 export class CalculatorController {
-  constructor(private readonly calculatorService: CalculatorService) {}
+  constructor(private readonly calculatorService: CalculatorService) { }
 
   @Post()
   calculateRate(@Body() use: UseDto): any {
