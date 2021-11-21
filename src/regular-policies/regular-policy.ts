@@ -13,7 +13,7 @@ export class RegularPolicy extends BasicRatePolicy {
   @Column()
   ratePerMinute: number;
 
-  calculate(minute: number): number {
-    return this.basic + this.ratePerMinute * minute;
+  calculate(minute: number) {
+    return { basic: this.basic, ratePerMinute: this.ratePerMinute * minute };
   }
 }
