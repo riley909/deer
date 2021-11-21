@@ -10,7 +10,7 @@ export class RegularPoliciesService {
     private readonly regularPolicyRepository: Repository<RegularPolicy>,
   ) { }
 
-  async calculateRegularRate(area: string, usedTime: number): Promise<number> {
+  async calculateRegularRate(area: string, usedTime: number) {
     const regularPolicy = await this.regularPolicyRepository.findOne(area);
     if (!regularPolicy) {
       throw new NotFoundException(`"${area}" 요금제가 존재하지 않습니다.`);
