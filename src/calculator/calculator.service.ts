@@ -75,7 +75,7 @@ export class CalculatorService {
       );
 
     //할인과 벌금 적용
-    const discountPenalty = await this.discountPenaltyInfoService.calculateDiscountPenalty(user, area.id, use, regularRate, outOfRange, checkInsideForbiddenArea, checkInsideParkingZone);
+    const discountPenalty = await this.discountPenaltyInfoService.calculateDiscountPenalty(user, area, use, regularRate, outOfRange, checkInsideForbiddenArea, checkInsideParkingZone);
     details = details.concat(discountPenalty.details);
 
     // 마지막 사용시간 업데이트
