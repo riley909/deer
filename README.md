@@ -138,6 +138,8 @@ forbidden_area_coords (반납금지구역의 경계를 표시하는 위도, 경�
 
 ## DB Schema
 
+<img src="https://user-images.githubusercontent.com/67426853/142763340-7e2084ee-fea2-47fe-a2ce-7064822503f4.png" width=700>
+
 </br>
 </br>
 
@@ -329,6 +331,8 @@ $ npm start
 ```
 
 ## 🛠 Dependencies
+
+<img src="https://user-images.githubusercontent.com/67426853/142763561-48d5c58d-e1d7-46e9-9199-7a54923c3c23.png" width=600>
 
 </br>
 
