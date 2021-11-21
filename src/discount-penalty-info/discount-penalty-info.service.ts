@@ -19,16 +19,15 @@ export class DiscountPenaltyInfoService {
 
   async calculateDiscountPenalty(
     user: User,
-    area: Area, use: UseDto, regularRate: number,
+    area: Area, use: UseDto, regularRate,
     outOfRange: boolean,
     checkInsideForbiddenArea: boolean,
     checkInsideParkingZone: boolean
   ) {
 
-    console.log('기본요금', regularRate);
 
     let discountPenaltyDetails: PriceDetail[] = [];
-    let totalPrice = regularRate;
+    let totalPrice = regularRate.basic + regularRate.ratePerMinute;
 
     let penaltyInfoList = await this.discountPenaltyInfoRepository.find({
       where: [
@@ -39,11 +38,7 @@ export class DiscountPenaltyInfoService {
       ]
     });
 
-    console.log('금지구역', checkInsideForbiddenArea);
-    console.log('지역외', outOfRange);
-
     if (checkInsideForbiddenArea) {
-      console.log('금지구역');
       //금지구역인 경우 패널티 먹이고 리턴
       let penaltyInfo = penaltyInfoList.filter((item) => item.policy === 'forbiddenArea');
       let detail = {
@@ -59,7 +54,6 @@ export class DiscountPenaltyInfoService {
       };
 
     } else if (!outOfRange) {
-      console.log('지역외');
       // 지역외인 경우 패널티 먹이고 리턴          
       let penaltyInfo = penaltyInfoList.filter((item) => item.policy === 'outOfRange');
       const distance = await this.forbiddenAreaService.outsideDistance(area, use.useEndLat, use.useEndLng);
@@ -116,21 +110,17 @@ export class DiscountPenaltyInfoService {
       switch (discountInfo.policy) {
         case "parkingZone": {
           if (checkInsideParkingZone) {
-            detail.price = regularRate * (discountInfo.price / 100);
+            detail.price = (regularRate.basic + regularRate.ratePerMinute) * (discountInfo.price / 100);
           }
           break;
         }
         case "useIn30Minute": {
           if (user.lastUsed) {
-            console.log('lastUsed', user.lastUsed);
-            console.log('useStartAt', use.useStartAt);
-            console.log('useEndAt', use.useStartAt);
 
             let min = await this.calculateUsedTime(user.lastUsed, use.useStartAt);
             if (min <= 30) {
-              detail.price = regularRate;
+              detail.price = regularRate.basic;
             }
-            console.log('min', min);
           }
           break;
 
@@ -139,7 +129,7 @@ export class DiscountPenaltyInfoService {
         case "parkingZoneFree": {
 
           if (checkInsideParkingZone) {
-            detail.price = regularRate;
+            detail.price = regularRate.basic + regularRate.ratePerMinute;
           }
           break;
         }

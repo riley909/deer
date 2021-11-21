@@ -51,7 +51,12 @@ export class CalculatorService {
     details.push({
       type: 'basic',
       policy: '기본요금',
-      price: regularRate
+      price: regularRate.basic
+    })
+    details.push({
+      type: 'basic',
+      policy: '분당요금',
+      price: regularRate.ratePerMinute
     })
 
     // 지역 폴리곤 벗어났는지 확인. 지역 안이면 true
