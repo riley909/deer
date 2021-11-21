@@ -17,6 +17,8 @@ import { ParkingZoneModule } from './parking-zone/parking-zone.module';
 import { ParkingZone } from './parking-zone/parking-zone.entity';
 import { ForbiddenArea } from './forbidden-area/forbidden-area.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { DiscountPenaltyInfoModule } from './discount-penalty-info/discount-penalty-info.module';
+import { DiscountPenaltyInfo } from './discount-penalty-info/discount-penalty-info';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       RegularPolicy,
       ParkingZone,
       ForbiddenArea,
+      DiscountPenaltyInfo
     ]),
     AuthModule,
     UsersModule,
@@ -40,10 +43,11 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
     AreaModule,
     CalculatorModule,
     RegularPolicesModule,
+    DiscountPenaltyInfoModule,
     ForbiddenAreaModule,
     ParkingZoneModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

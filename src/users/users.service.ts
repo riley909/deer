@@ -13,7 +13,7 @@ import { ReadUserDto } from './dto/read-user-dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersRepository: UsersRepository) { }
   async findByEmail(email: string): Promise<User> {
     return await this.usersRepository.findOne({
       email: email,
@@ -59,9 +59,20 @@ export class UsersService {
     }
     existingUser.password = await bcrypt.hash(updateUserDto.password, 10);
     const updateUser = await this.usersRepository.save(existingUser);
+
     return plainToClass(ReadUserDto, classToPlain(updateUser), {
       excludeExtraneousValues: true,
     });
+  }
+
+  async updateLastUsed(user: User): Promise<ReadUserDto> {
+
+    const updateUser = await this.usersRepository.save(user);
+
+    return plainToClass(ReadUserDto, classToPlain(updateUser), {
+      excludeExtraneousValues: true,
+    });
+
   }
 
   async remove(id: number): Promise<number> {

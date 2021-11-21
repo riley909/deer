@@ -11,6 +11,7 @@ export class AreaService {
   ) { }
 
   async validationAndReturnArea(areaId: string): Promise<Area> {
+
     const areaEntity = await this.findOne(areaId);
     if (!areaEntity) {
       throw new NotFoundException(`"${areaId}"가 존재하지 않습니다.`);
@@ -28,7 +29,7 @@ export class AreaService {
     const query = ` SELECT id FROM area 
                     WHERE ST_CONTAINS( area_boundary, ST_GeomFromText( ${qPoint} ))`;
     const result = await this.areaRepository.query(query);
-    console.log(result.length);
+
     if (result.length) {
       return true; // 벗어나지 않음. 범위 안!
     } else {
@@ -37,8 +38,9 @@ export class AreaService {
   }
 
   async findOne(areaId: string) {
-    const query = `SELECT id, ST_AsText(area_boundary), ST_AsText(area_center), ST_AsText(area_coords) as area_coords FROM area WHERE id = ${areaId}`;
+    const query = `SELECT id, ST_AsText(area_boundary), ST_AsText(area_center), ST_AsText(area_coords) as area_coords FROM area WHERE id = "${areaId}"`;
     const areaEntity = await this.areaRepository.query(query);
     return areaEntity;
   }
+
 }
