@@ -14,8 +14,7 @@ async function bootstrap() {
   );
 
   const options = new DocumentBuilder()
-    .setTitle('Boilerplate code')
-    .setDescription('프로젝트 기본 유저까지! 테스트 코드는 조금씩 추가 예정..')
+    .setTitle('Deer x 원투펀치팀')
     .setVersion('1.0')
     .build();
 
