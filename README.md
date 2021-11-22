@@ -19,10 +19,10 @@
 | 이름   | github                                          | 담당 기능 | TIL/회고 |
 | ------ | ----------------------------------------------- | --------- | -------- |
 | 김남형 | [42seouler](https://github.com/)                | 요금계산 로직 설계, 기본요금 인터페이스 다형성        |          |
-| 김서경 | [riley909](https://github.com/riley909)         | 요금계산 로직, 부트스트랩시 디비초기화, typeorm 설정   |          |
+| 김서경 | [riley909](https://github.com/riley909)         | 요금계산 로직, 부트스트랩시 디비초기화, typeorm DB설정   |          |
 | 김요셉 | [kim-jos](https://github.com/kim-jos)           | MySQL spatial data query를 typeorm querybuilder 변환, EC2배포      |          |
-| 정천우 | [codehousepig](https://github.com/codehousepig) | MySQL spatial data 사용법, 파킹존, 금지구역, 지역의 유효성       |          |
-| 최유진 | [n12seconds](https://github.com/n12seconds)     | 할인, 패널티 로직 구현, 할인 패널티 DB 설계, Postman        |          |
+| 정천우 | [codehousepig](https://github.com/codehousepig) | MySQL spatial data 사용법, 파킹존, 금지구역, 지역의 로직 및 유효성 검사     |          |
+| 최유진 | [n12seconds](https://github.com/n12seconds)     | 할인, 패널티 로직 구현, 할인 패널티 DB 설계, Postman테스트 환경 구성    |          |
 
 </div>
 
