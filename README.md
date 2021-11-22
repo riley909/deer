@@ -18,11 +18,11 @@
 
 | 이름   | github                                          | 담당 기능 | TIL/회고 |
 | ------ | ----------------------------------------------- | --------- | -------- |
-| 김남형 | [42seouler](https://github.com/)                |           |          |
-| 김서경 | [riley909](https://github.com/riley909)         |           |          |
-| 김요셉 | [kim-jos](https://github.com/kim-jos)           |           |          |
-| 정천우 | [codehousepig](https://github.com/codehousepig) |           |          |
-| 최유진 | [n12seconds](https://github.com/n12seconds)     |           |          |
+| 김남형 | [42seouler](https://github.com/)                | 요금계산 로직 설계, 기본요금 인터페이스 다형성        |          |
+| 김서경 | [riley909](https://github.com/riley909)         | 요금계산 로직, 부트스트랩시 디비초기화, typeorm 설정   |          |
+| 김요셉 | [kim-jos](https://github.com/kim-jos)           | MySQL spatial data query를 typeorm querybuilder 변환, EC2배포      |          |
+| 정천우 | [codehousepig](https://github.com/codehousepig) | MySQL spatial data 사용법, 파킹존, 금지구역, 지역의 유효성       |          |
+| 최유진 | [n12seconds](https://github.com/n12seconds)     | 할인, 패널티 로직 구현, 할인 패널티 DB 설계, Postman        |          |
 
 </div>
 
@@ -164,6 +164,12 @@ export class AppService implements OnApplicationBootstrap {
 서버 구동시 테이블 생성과 동시에 테스트 가능한 데이터가 삽입됩니다.
 
 <br>
+
+## 기본 요금 Interface 다형성 이용
+
+![image](https://user-images.githubusercontent.com/77034008/142785971-374cec5f-de95-499e-8e02-e987e71febb6.png)
+
+인터페이스를 구현한 클레스를 사용해 기본 요금 계산방식이 바뀌더라도 비지니스로직에 영향을 최소화하기 위한 방법으로 이용했습니다.
 
 ## MySQL의 Spatial Data Types 활용하기
 
