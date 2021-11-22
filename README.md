@@ -307,7 +307,7 @@ $ git clone
 2. clone한 경로에 들어간 후 의존성을 설치하고 환경 셋팅을 진행합니다.
 
 ```
-$ cd 12-punch-assignment4-8percent
+$ cd deer
 $ npm install
 ```
 
